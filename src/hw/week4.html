@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
+    <title>KBDC - Week 4</title>
+  </head>
+  <body
+    class="bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 min-h-screen text-white"
+  >
+    <div class="container mx-auto px-4 py-8 max-w-4xl">
+      <div class="text-center mb-8">
+        <h1
+          class="text-4xl font-bold mb-2 bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent"
+        >
+          EVM Wallet Generator
+        </h1>
+        <p class="text-slate-300">
+          Create or load your Ethereum wallet securely
+        </p>
+      </div>
+
+      <!-- Tab Navigation -->
+      <div class="flex gap-2 mb-6 bg-slate-800/50 p-1 rounded-lg">
+        <button
+          id="generateTab"
+          class="tab-btn flex-1 py-3 rounded-md font-semibold transition-all active"
+        >
+          Generate New Wallet
+        </button>
+        <button
+          id="loadTab"
+          class="tab-btn flex-1 py-3 rounded-md font-semibold transition-all"
+        >
+          Load Wallet
+        </button>
+      </div>
+
+      <!-- Generate Wallet Section -->
+      <div id="generateSection" class="section">
+        <div
+          class="bg-slate-800/50 backdrop-blur-sm rounded-xl p-6 shadow-2xl border border-purple-500/20"
+        >
+          <div
+            class="flex items-start gap-3 mb-6 p-4 bg-amber-500/10 border border-amber-500/30 rounded-lg"
+          >
+            <svg
+              class="w-6 h-6 text-amber-400 flex-shrink-0 mt-0.5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+              />
+            </svg>
+            <div class="text-sm text-amber-200">
+              <strong class="block mb-1">Important Security Notice:</strong>
+              Save your mnemonic phrase securely. Anyone with access to it can
+              control your wallet and funds.
+            </div>
+          </div>
+
+          <button
+            id="generateBtn"
+            class="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-bold py-4 rounded-lg transition-all transform hover:scale-105 shadow-lg"
+          >
+            Generate New Wallet
+          </button>
+
+          <div id="generatedWallet" class="hidden mt-6 space-y-4">
+            <!-- Mnemonic -->
+            <div
+              class="bg-slate-900/50 p-4 rounded-lg border border-purple-500/30"
+            >
+              <div class="flex items-center justify-between mb-2">
+                <label class="text-sm font-semibold text-purple-300"
+                  >Mnemonic Phrase</label
+                >
+                <button
+                  id="copyMnemonic"
+                  class="text-xs bg-purple-600 hover:bg-purple-700 px-3 py-1 rounded transition-all"
+                >
+                  Copy
+                </button>
+              </div>
+              <div
+                id="mnemonicDisplay"
+                class="font-mono text-sm bg-slate-950/50 p-3 rounded break-all text-purple-200"
+              ></div>
+            </div>
+
+            <!-- Address -->
+            <div
+              class="bg-slate-900/50 p-4 rounded-lg border border-green-500/30"
+            >
+              <div class="flex items-center justify-between mb-2">
+                <label class="text-sm font-semibold text-green-300"
+                  >Address</label
+                >
+                <button
+                  id="copyAddress"
+                  class="text-xs bg-green-600 hover:bg-green-700 px-3 py-1 rounded transition-all"
+                >
+                  Copy
+                </button>
+              </div>
+              <div
+                id="addressDisplay"
+                class="font-mono text-sm bg-slate-950/50 p-3 rounded break-all text-green-200"
+              ></div>
+            </div>
+
+            <!-- Public Key -->
+            <div
+              class="bg-slate-900/50 p-4 rounded-lg border border-blue-500/30"
+            >
+              <div class="flex items-center justify-between mb-2">
+                <label class="text-sm font-semibold text-blue-300"
+                  >Public Key</label
+                >
+                <button
+                  id="copyPublicKey"
+                  class="text-xs bg-blue-600 hover:bg-blue-700 px-3 py-1 rounded transition-all"
+                >
+                  Copy
+                </button>
+              </div>
+              <div
+                id="publicKeyDisplay"
+                class="font-mono text-xs bg-slate-950/50 p-3 rounded break-all text-blue-200"
+              ></div>
+            </div>
+
+            <!-- Private Key -->
+            <div
+              class="bg-slate-900/50 p-4 rounded-lg border border-red-500/30"
+            >
+              <div class="flex items-center justify-between mb-2">
+                <label class="text-sm font-semibold text-red-300"
+                  >Private Key</label
+                >
+                <div class="flex gap-2">
+                  <button
+                    id="togglePrivateKey"
+                    class="text-xs bg-slate-700 hover:bg-slate-600 px-3 py-1 rounded transition-all"
+                  >
+                    Show
+                  </button>
+                  <button
+                    id="copyPrivateKey"
+                    class="text-xs bg-red-600 hover:bg-red-700 px-3 py-1 rounded transition-all"
+                  >
+                    Copy
+                  </button>
+                </div>
+              </div>
+              <div
+                id="privateKeyDisplay"
+                class="font-mono text-xs bg-slate-950/50 p-3 rounded break-all text-red-200"
+              >
+                ••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Load Wallet Section -->
+      <div id="loadSection" class="section hidden">
+        <div
+          class="bg-slate-800/50 backdrop-blur-sm rounded-xl p-6 shadow-2xl border border-purple-500/20"
+        >
+          <!-- Load from Mnemonic -->
+          <div class="mb-8">
+            <h3 class="text-xl font-bold mb-4 text-purple-300">
+              Load from Mnemonic
+            </h3>
+            <textarea
+              id="mnemonicInput"
+              placeholder="Enter your 12 or 24 word mnemonic phrase..."
+              class="w-full bg-slate-900/50 border border-purple-500/30 rounded-lg p-4 text-white placeholder-slate-500 focus:outline-none focus:border-purple-500 transition-all h-24 resize-none"
+            ></textarea>
+            <button
+              id="loadFromMnemonic"
+              class="mt-3 w-full bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 rounded-lg transition-all"
+            >
+              Load Wallet from Mnemonic
+            </button>
+          </div>
+
+          <div class="flex items-center gap-4 my-6">
+            <div class="flex-1 h-px bg-slate-700"></div>
+            <span class="text-slate-400 text-sm">OR</span>
+            <div class="flex-1 h-px bg-slate-700"></div>
+          </div>
+
+          <!-- Load from Private Key -->
+          <div>
+            <h3 class="text-xl font-bold mb-4 text-pink-300">
+              Load from Private Key
+            </h3>
+            <input
+              id="privateKeyInput"
+              type="password"
+              placeholder="Enter your private key (with or without 0x prefix)..."
+              class="w-full bg-slate-900/50 border border-pink-500/30 rounded-lg p-4 text-white placeholder-slate-500 focus:outline-none focus:border-pink-500 transition-all"
+            />
+            <button
+              id="loadFromPrivateKey"
+              class="mt-3 w-full bg-pink-600 hover:bg-pink-700 text-white font-bold py-3 rounded-lg transition-all"
+            >
+              Load Wallet from Private Key
+            </button>
+          </div>
+
+          <!-- Loaded Wallet Display -->
+          <div id="loadedWallet" class="hidden mt-8 space-y-4">
+            <div
+              class="flex items-center gap-2 mb-4 p-3 bg-green-500/10 border border-green-500/30 rounded-lg"
+            >
+              <svg
+                class="w-5 h-5 text-green-400"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M5 13l4 4L19 7"
+                />
+              </svg>
+              <span class="text-green-300 font-semibold"
+                >Wallet Loaded Successfully</span
+              >
+            </div>
+
+            <!-- Address -->
+            <div
+              class="bg-slate-900/50 p-4 rounded-lg border border-green-500/30"
+            >
+              <div class="flex items-center justify-between mb-2">
+                <label class="text-sm font-semibold text-green-300"
+                  >Address</label
+                >
+                <button
+                  id="copyLoadedAddress"
+                  class="text-xs bg-green-600 hover:bg-green-700 px-3 py-1 rounded transition-all"
+                >
+                  Copy
+                </button>
+              </div>
+              <div
+                id="loadedAddressDisplay"
+                class="font-mono text-sm bg-slate-950/50 p-3 rounded break-all text-green-200"
+              ></div>
+            </div>
+
+            <!-- Public Key -->
+            <div
+              class="bg-slate-900/50 p-4 rounded-lg border border-blue-500/30"
+            >
+              <div class="flex items-center justify-between mb-2">
+                <label class="text-sm font-semibold text-blue-300"
+                  >Public Key</label
+                >
+                <button
+                  id="copyLoadedPublicKey"
+                  class="text-xs bg-blue-600 hover:bg-blue-700 px-3 py-1 rounded transition-all"
+                >
+                  Copy
+                </button>
+              </div>
+              <div
+                id="loadedPublicKeyDisplay"
+                class="font-mono text-xs bg-slate-950/50 p-3 rounded break-all text-blue-200"
+              ></div>
+            </div>
+
+            <!-- Private Key -->
+            <div
+              class="bg-slate-900/50 p-4 rounded-lg border border-red-500/30"
+            >
+              <div class="flex items-center justify-between mb-2">
+                <label class="text-sm font-semibold text-red-300"
+                  >Private Key</label
+                >
+                <div class="flex gap-2">
+                  <button
+                    id="toggleLoadedPrivateKey"
+                    class="text-xs bg-slate-700 hover:bg-slate-600 px-3 py-1 rounded transition-all"
+                  >
+                    Show
+                  </button>
+                  <button
+                    id="copyLoadedPrivateKey"
+                    class="text-xs bg-red-600 hover:bg-red-700 px-3 py-1 rounded transition-all"
+                  >
+                    Copy
+                  </button>
+                </div>
+              </div>
+              <div
+                id="loadedPrivateKeyDisplay"
+                class="font-mono text-xs bg-slate-950/50 p-3 rounded break-all text-red-200"
+              >
+                ••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••
+              </div>
+            </div>
+          </div>
+
+          <!-- Error Display -->
+          <div
+            id="loadError"
+            class="hidden mt-4 p-4 bg-red-500/10 border border-red-500/30 rounded-lg"
+          >
+            <div class="flex items-start gap-2">
+              <svg
+                class="w-5 h-5 text-red-400 flex-shrink-0 mt-0.5"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M6 18L18 6M6 6l12 12"
+                />
+              </svg>
+              <span id="loadErrorText" class="text-red-300 text-sm"></span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      let currentWallet = {
+        generated: null,
+        loaded: null,
+      };
+
+      // Tab switching
+      const generateTab = document.getElementById("generateTab");
+      const loadTab = document.getElementById("loadTab");
+      const generateSection = document.getElementById("generateSection");
+      const loadSection = document.getElementById("loadSection");
+
+      generateTab.addEventListener("click", () => {
+        generateTab.classList.add("active");
+        loadTab.classList.remove("active");
+        generateSection.classList.remove("hidden");
+        loadSection.classList.add("hidden");
+      });
+
+      loadTab.addEventListener("click", () => {
+        loadTab.classList.add("active");
+        generateTab.classList.remove("active");
+        loadSection.classList.remove("hidden");
+        generateSection.classList.add("hidden");
+      });
+
+      // Generate new wallet
+      document.getElementById("generateBtn").addEventListener("click", () => {
+        const wallet = ethers.Wallet.createRandom();
+        currentWallet.generated = wallet;
+
+        // Display wallet info
+        document.getElementById("mnemonicDisplay").textContent =
+          wallet.mnemonic.phrase;
+        document.getElementById("addressDisplay").textContent = wallet.address;
+        document.getElementById("publicKeyDisplay").textContent =
+          wallet.publicKey;
+        document.getElementById("privateKeyDisplay").textContent =
+          "••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••";
+        document.getElementById("privateKeyDisplay").dataset.key =
+          wallet.privateKey;
+
+        document.getElementById("generatedWallet").classList.remove("hidden");
+      });
+
+      // Toggle private key visibility (generated)
+      let privateKeyVisible = false;
+      document
+        .getElementById("togglePrivateKey")
+        .addEventListener("click", (e) => {
+          privateKeyVisible = !privateKeyVisible;
+          const display = document.getElementById("privateKeyDisplay");
+          const button = e.target;
+
+          if (privateKeyVisible) {
+            display.textContent = display.dataset.key;
+            button.textContent = "Hide";
+          } else {
+            display.textContent =
+              "••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••";
+            button.textContent = "Show";
+          }
+        });
+
+      // Copy functions (generated wallet)
+      document.getElementById("copyMnemonic").addEventListener("click", () => {
+        copyToClipboard(
+          document.getElementById("mnemonicDisplay").textContent,
+          "Mnemonic copied!"
+        );
+      });
+
+      document.getElementById("copyAddress").addEventListener("click", () => {
+        copyToClipboard(
+          document.getElementById("addressDisplay").textContent,
+          "Address copied!"
+        );
+      });
+
+      document.getElementById("copyPublicKey").addEventListener("click", () => {
+        copyToClipboard(
+          document.getElementById("publicKeyDisplay").textContent,
+          "Public key copied!"
+        );
+      });
+
+      document
+        .getElementById("copyPrivateKey")
+        .addEventListener("click", () => {
+          const key = document.getElementById("privateKeyDisplay").dataset.key;
+          copyToClipboard(key, "Private key copied!");
+        });
+
+      // Load from mnemonic
+      document
+        .getElementById("loadFromMnemonic")
+        .addEventListener("click", () => {
+          const mnemonic = document
+            .getElementById("mnemonicInput")
+            .value.trim();
+          hideError();
+
+          try {
+            if (!mnemonic) {
+              showError("Please enter a mnemonic phrase");
+              return;
+            }
+
+            const wallet = ethers.Wallet.fromMnemonic(mnemonic);
+            currentWallet.loaded = wallet;
+            displayLoadedWallet(wallet);
+          } catch (error) {
+            showError("Invalid mnemonic phrase. Please check and try again.");
+          }
+        });
+
+      // Load from private key
+      document
+        .getElementById("loadFromPrivateKey")
+        .addEventListener("click", () => {
+          let privateKey = document
+            .getElementById("privateKeyInput")
+            .value.trim();
+          hideError();
+
+          try {
+            if (!privateKey) {
+              showError("Please enter a private key");
+              return;
+            }
+
+            // Add 0x prefix if not present
+            if (!privateKey.startsWith("0x")) {
+              privateKey = "0x" + privateKey;
+            }
+
+            const wallet = new ethers.Wallet(privateKey);
+            currentWallet.loaded = wallet;
+            displayLoadedWallet(wallet);
+          } catch (error) {
+            showError("Invalid private key. Please check and try again.");
+          }
+        });
+
+      // Display loaded wallet
+      function displayLoadedWallet(wallet) {
+        document.getElementById("loadedAddressDisplay").textContent =
+          wallet.address;
+        document.getElementById("loadedPublicKeyDisplay").textContent =
+          wallet.publicKey;
+        document.getElementById("loadedPrivateKeyDisplay").textContent =
+          "••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••";
+        document.getElementById("loadedPrivateKeyDisplay").dataset.key =
+          wallet.privateKey;
+
+        document.getElementById("loadedWallet").classList.remove("hidden");
+      }
+
+      // Toggle private key visibility (loaded)
+      let loadedPrivateKeyVisible = false;
+      document
+        .getElementById("toggleLoadedPrivateKey")
+        .addEventListener("click", (e) => {
+          loadedPrivateKeyVisible = !loadedPrivateKeyVisible;
+          const display = document.getElementById("loadedPrivateKeyDisplay");
+          const button = e.target;
+
+          if (loadedPrivateKeyVisible) {
+            display.textContent = display.dataset.key;
+            button.textContent = "Hide";
+          } else {
+            display.textContent =
+              "••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••";
+            button.textContent = "Show";
+          }
+        });
+
+      // Copy functions (loaded wallet)
+      document
+        .getElementById("copyLoadedAddress")
+        .addEventListener("click", () => {
+          copyToClipboard(
+            document.getElementById("loadedAddressDisplay").textContent,
+            "Address copied!"
+          );
+        });
+
+      document
+        .getElementById("copyLoadedPublicKey")
+        .addEventListener("click", () => {
+          copyToClipboard(
+            document.getElementById("loadedPublicKeyDisplay").textContent,
+            "Public key copied!"
+          );
+        });
+
+      document
+        .getElementById("copyLoadedPrivateKey")
+        .addEventListener("click", () => {
+          const key = document.getElementById("loadedPrivateKeyDisplay").dataset
+            .key;
+          copyToClipboard(key, "Private key copied!");
+        });
+
+      // Helper functions
+      function copyToClipboard(text, message) {
+        navigator.clipboard.writeText(text).then(() => {
+          showToast(message);
+        });
+      }
+
+      function showToast(message) {
+        const toast = document.createElement("div");
+        toast.className =
+          "fixed bottom-4 right-4 bg-green-600 text-white px-6 py-3 rounded-lg shadow-lg z-50 animate-fade-in";
+        toast.textContent = message;
+        document.body.appendChild(toast);
+
+        setTimeout(() => {
+          toast.remove();
+        }, 2000);
+      }
+
+      function showError(message) {
+        document.getElementById("loadError").classList.remove("hidden");
+        document.getElementById("loadErrorText").textContent = message;
+      }
+
+      function hideError() {
+        document.getElementById("loadError").classList.add("hidden");
+      }
+
+      // Styles
+      const style = document.createElement("style");
+      style.textContent = `
+        .tab-btn {
+          background: transparent;
+          color: #cbd5e1;
+        }
+        .tab-btn.active {
+          background: linear-gradient(to right, #9333ea, #ec4899);
+          color: white;
+        }
+        .section {
+          animation: fadeIn 0.3s ease-in;
+        }
+        @keyframes fadeIn {
+          from { opacity: 0; transform: translateY(10px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes fade-in {
+          from { opacity: 0; transform: translateY(10px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fade-in {
+          animation: fade-in 0.3s ease-out;
+        }
+      `;
+      document.head.appendChild(style);
+    </script>
+  </body>
+</html>
