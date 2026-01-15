@@ -1,81 +1,13 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>KBDC Project - Home</title>
-    <link rel="stylesheet" href="./dist/output.css">
-</head>
-<body>
-    <div class="min-h-screen">
-        <!-- Header -->
-        <header class="bg-blue-600 text-white shadow-lg">
-            <div class="container mx-auto px-4 py-6">
-                <h1 class="text-3xl font-bold">KBDC Project</h1>
-                <p class="text-blue-100 mt-2">Multi-page TypeScript Application</p>
-            </div>
-        </header>
-
-        <!-- Main Content -->
-        <main class="container mx-auto px-4 py-8">
-            <div class="max-w-4xl mx-auto">
-                <h2 class="text-2xl font-semibold mb-6 text-gray-800">Welcome</h2>
-
-                <p class="text-gray-600 mb-8">
-                    This is a multi-page HTML project built with TypeScript, esbuild, and Tailwind CSS.
-                    Navigate to different pages using the links below.
-                </p>
-
-                <!-- Navigation Cards -->
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    <!-- Week 4 Card -->
-                    <a href="./week4.html" class="block">
-                        <div class="bg-white rounded-lg shadow-md hover:shadow-xl transition-shadow p-6 border border-gray-200 hover:border-blue-500">
-                            <div class="flex items-center justify-between mb-4">
-                                <h3 class="text-xl font-semibold text-gray-800">Week 4</h3>
-                                <svg class="w-6 h-6 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-                                </svg>
-                            </div>
-                            <p class="text-gray-600">Todo List Application</p>
-                            <p class="text-sm text-gray-500 mt-2">A simple todo list app built with vanilla TypeScript</p>
-                        </div>
-                    </a>
-
-                    <!-- Placeholder for future pages -->
-                    <div class="bg-white rounded-lg shadow-md p-6 border border-gray-200 opacity-50">
-                        <div class="flex items-center justify-between mb-4">
-                            <h3 class="text-xl font-semibold text-gray-800">Week 5</h3>
-                            <svg class="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
-                            </svg>
-                        </div>
-                        <p class="text-gray-600">Coming Soon</p>
-                        <p class="text-sm text-gray-500 mt-2">Future content will be added here</p>
-                    </div>
-
-                    <div class="bg-white rounded-lg shadow-md p-6 border border-gray-200 opacity-50">
-                        <div class="flex items-center justify-between mb-4">
-                            <h3 class="text-xl font-semibold text-gray-800">Week 6</h3>
-                            <svg class="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
-                            </svg>
-                        </div>
-                        <p class="text-gray-600">Coming Soon</p>
-                        <p class="text-sm text-gray-500 mt-2">Future content will be added here</p>
-                    </div>
-                </div>
-            </div>
-        </main>
-
-        <!-- Footer -->
-        <footer class="bg-gray-800 text-white mt-12">
-            <div class="container mx-auto px-4 py-6 text-center">
-                <p class="text-gray-400">Built with TypeScript, esbuild, and Tailwind CSS</p>
-            </div>
-        </footer>
-    </div>
-
-    <script type="module" src="./dist/main.js"></script>
-</body>
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>kbdc</title>
+  </head>
+  <body>
+    <div id="app"></div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
 </html>
